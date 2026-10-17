@@ -39,10 +39,14 @@ void managePump() {
     if (mode == 2) { // FORCE OFF
         stopFilling();
     } 
-    else if (mode == 1) { // FORCE ON
-        startFilling();
+    else if (mode == 1) { // FORCE ON - Runs immediately and stops when water is full
+        if (waterLow) {
+            startFilling();
+        } else {
+            stopFilling();
+        }
     } 
-    else { // AUTO
+    else { // AUTO - Runs only during the scheduled window if water is low
         if (isFillWindow() && waterLow) {
             startFilling();
         } else {

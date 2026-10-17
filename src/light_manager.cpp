@@ -52,6 +52,12 @@ void manageLight() {
         int startMins = LIGHT_HOUR_START * 60 + LIGHT_MINUTE_START;
         int endMins = LIGHT_HOUR_END * 60 + LIGHT_MINUTE_END;
 
+        // AUTOMATIC RESET: If it's a new day and we have reached or passed the start time, reset quota!
+        int lastResetDay = lightPrefs.getInt("resetDay", -1);
+        if (timeinfo.tm_yday != lastResetDay && currentMins >= startMins) {
+            resetLightQuota();
+        }
+
         bool isInsideWindow = (currentMins >= startMins && currentMins < endMins);
 
         if (isInsideWindow && remainingSecondsRAM > 0) {
@@ -59,11 +65,6 @@ void manageLight() {
             if (remainingSecondsRAM > 0) remainingSecondsRAM--; 
         } else {
             digitalWrite(LIGHT_RELAY_PIN, LOW);
-        }
-
-        int lastResetDay = lightPrefs.getInt("resetDay", 0);
-        if (currentMins >= endMins && timeinfo.tm_yday != lastResetDay) {
-            resetLightQuota();
         }
     }
 
@@ -76,3 +77,4 @@ void manageLight() {
         }
     }
 }
+
